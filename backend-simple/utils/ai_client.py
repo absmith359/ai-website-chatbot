@@ -30,3 +30,5 @@ async def ask_ai(message: str):
         return f"AI error: {data}"
 
     return data["choices"][0]["message"]["content"]
+
+print("DEBUG KEY:", AI_API_KEY)
