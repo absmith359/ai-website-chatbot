@@ -13,3 +13,5 @@ BACKEND_URL = os.getenv("BACKEND_URL", "https://ai-website-chatbot.onrender.com"
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://ai-website-chatbot-beige.vercel.app")
 
 WIDGET_URL = os.getenv("WIDGET_URL")
+
+print("CONFIG LOADED")
