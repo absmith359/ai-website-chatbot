@@ -30,6 +30,7 @@ async def ask_ai(message: str):
     # Try to parse JSON safely
     try:
         data = response.json()
+        print("OPENROUTER RESPONSE:", data)
     except Exception:
         return f"AI error: Non-JSON response ({response.text})"
 
