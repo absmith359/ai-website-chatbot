@@ -5,11 +5,11 @@ print("DEBUG KEY:", AI_API_KEY)
 
 async def ask_ai(message: str):
     headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {AI_API_KEY}",
-        "Referer": "https://ai-website-chatbot.onrender.com",
-        "X-Title": "AI Website Chatbot"
-    }
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {AI_API_KEY}",
+    "HTTP-Referer": "https://ai-website-chatbot.onrender.com",
+    "X-Title": "AI Website Chatbot"
+        }
 
     payload = {
         "model": AI_MODEL_NAME,
