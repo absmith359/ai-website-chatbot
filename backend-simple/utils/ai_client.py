@@ -5,10 +5,7 @@ print("DEBUG KEY:", AI_API_KEY)
 
 async def ask_ai(message: str):
     headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {AI_API_KEY}",
-    "HTTP-Referer": "https://ai-website-chatbot.onrender.com",
-    "X-Title": "AI Website Chatbot"
+    "Authorization": f"Bearer {AI_API_KEY}"
         }
 
     payload = {
@@ -19,7 +16,7 @@ async def ask_ai(message: str):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                "https://openrouter.ai/api/v1/chat/completions",
+                "https://api.openai.com/v1/chat/completions",
                 json=payload,
                 headers=headers,
                 timeout=30
