@@ -10,6 +10,22 @@ window.onload = () => {
     const container = document.querySelector(".chat-container");
     const scrollShadow = document.getElementById("scroll-shadow");
     const scrollDownBtn = document.getElementById("scroll-down-btn");
+    const logo = document.querySelector('.header-logo');
+
+
+    logo.addEventListener('click', () => {
+    container.classList.remove("active");   // close chat
+    bubble.classList.remove("hidden");      // show bubble again
+});
+
+chatWindow.addEventListener("scroll", () => {
+    const atTop = chatWindow.scrollTop === 0;
+    const atBottom =
+        chatWindow.scrollHeight - chatWindow.scrollTop - chatWindow.clientHeight < 40;
+
+    scrollShadow.style.opacity = atTop ? "0" : "1";
+    scrollDownBtn.style.opacity = atBottom ? "0" : "1";
+});
 
     // Disable input until bubble is clicked
     input.disabled = true;
@@ -19,7 +35,7 @@ window.onload = () => {
     // OPEN CHAT (bubble behavior)
     // -------------------------------
     bubble.onclick = () => {
-        container.classList.add("open");
+        container.classList.add("active");   // <-- FIXED
         bubble.classList.add("hidden");
 
         // Add ESC hint if missing
@@ -34,7 +50,16 @@ window.onload = () => {
         input.disabled = false;
         sendBtn.disabled = false;
         input.focus();
-    };
+   };
+
+   document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        container.classList.remove("active");
+        bubble.classList.remove("hidden");
+    }
+});
+
+
 
     // -------------------------------
     // SEND MESSAGE
@@ -188,12 +213,6 @@ window.onload = () => {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     };
 
-    chatWindow.addEventListener("scroll", () => {
-        const atBottom =
-            chatWindow.scrollHeight - chatWindow.scrollTop - chatWindow.clientHeight < 40;
-
-        scrollDownBtn.style.opacity = atBottom ? "0" : "1";
-    });
 
     // -------------------------------
     // CLEAR CHAT (visual only)
@@ -202,3 +221,4 @@ window.onload = () => {
         chatWindow.innerHTML = "";
     };
 };
+
