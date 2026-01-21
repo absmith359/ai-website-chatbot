@@ -1,221 +1,173 @@
-/* ------------------------------
-   GLOBAL
------------------------------- */
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #f8f9fb, #eef1f5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+/* --------------------------------------------------
+   ROOT VARIABLES (Light + Dark Mode)
+-------------------------------------------------- */
+:root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f7;
+    --text: #1c1c1e;
+    --text-light: #6e6e73;
+    --accent: #007aff;
+    --border: #e5e5ea;
+    --shadow: rgba(0, 0, 0, 0.08);
 }
 
-/* Smooth animations everywhere */
-* {
-    transition: all 0.2s ease;
+body.dark {
+    --bg: #1c1c1e;
+    --bg-secondary: #2c2c2e;
+    --text: #f5f5f7;
+    --text-light: #a1a1a6;
+    --accent: #0a84ff;
+    --border: #3a3a3c;
+    --shadow: rgba(0, 0, 0, 0.4);
 }
 
-/* ------------------------------
-   FLOATING WIDGET SUPPORT
------------------------------- */
-
-#chat-widget {
+/* --------------------------------------------------
+   FLOATING WIDGET BUTTON
+-------------------------------------------------- */
+#chat-toggle {
     position: fixed;
     bottom: 24px;
     right: 24px;
-    z-index: 9999;
-}
-
-#chat-toggle {
-    width: 64px;
-    height: 64px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background: #007AFF;
-    color: white;
     border: none;
+    background: var(--accent);
+    color: white;
     font-size: 28px;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(0,122,255,0.35);
-    display: none; /* set to flex if using widget mode */
+    box-shadow: 0 8px 20px var(--shadow);
+    transition: transform .2s ease, box-shadow .2s ease;
+    z-index: 9999;
 }
 
 #chat-toggle:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 28px rgba(0,122,255,0.45);
+    box-shadow: 0 10px 24px var(--shadow);
 }
 
-/* ------------------------------
-   CHAT CONTAINER (Vision Pro style)
------------------------------- */
-
+/* --------------------------------------------------
+   CHAT CONTAINER
+-------------------------------------------------- */
 .chat-container {
-    width: 400px;
-    height: 600px;
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(18px);
-    border-radius: 22px;
-    border: 1px solid rgba(200, 200, 210, 0.6);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    display: flex;
+    position: fixed;
+    bottom: 100px;
+    right: 24px;
+    width: 360px;
+    height: 520px;
+    background: var(--bg);
+    border-radius: 18px;
+    box-shadow: 0 12px 32px var(--shadow);
+    display: none;
     flex-direction: column;
     overflow: hidden;
-    animation: fadeInUp 0.4s ease;
-    position: relative;
+    transition: opacity .25s ease, transform .25s ease;
+    transform: translateY(10px);
+    opacity: 0;
+    z-index: 9998;
 }
 
-/* Futuristic glow behind chat */
-.chat-container::before {
-    content: "";
-    position: absolute;
-    inset: -40px;
-    background: radial-gradient(circle at bottom right, rgba(0,122,255,0.25), transparent 70%);
-    z-index: -1;
-    filter: blur(50px);
+.chat-container.open {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ------------------------------
-   CHAT HEADER
------------------------------- */
-
+/* --------------------------------------------------
+   HEADER
+-------------------------------------------------- */
 .chat-header {
-    padding: 16px;
-    text-align: center;
-    font-size: 17px;
+    background: var(--bg-secondary);
+    padding: 14px 18px;
+    font-size: 16px;
     font-weight: 600;
-    color: #111;
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(220,220,230,0.7);
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
 }
 
-/* ------------------------------
-   MESSAGES AREA
------------------------------- */
+#dark-toggle {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text);
+    transition: opacity .2s ease;
+}
 
+#dark-toggle:hover {
+    opacity: 0.7;
+}
+
+/* --------------------------------------------------
+   MESSAGES AREA
+-------------------------------------------------- */
 .messages {
     flex: 1;
-    padding: 20px;
+    padding: 16px;
     overflow-y: auto;
+    background: var(--bg);
     scroll-behavior: smooth;
 }
 
-/* Apple-style scrollbars */
+/* Hide scrollbar (cleaner look) */
 .messages::-webkit-scrollbar {
     width: 6px;
 }
 .messages::-webkit-scrollbar-thumb {
-    background: rgba(180, 180, 190, 0.4);
-    border-radius: 10px;
+    background: var(--border);
+    border-radius: 4px;
 }
 
-/* ------------------------------
-   INPUT AREA (Frosted Glass)
------------------------------- */
-
-.input-area {
-    display: flex;
-    padding: 12px;
-    border-top: 1px solid rgba(220, 220, 230, 0.7);
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(10px);
-}
-
-#msg {
-    flex: 1;
-    padding: 12px 14px;
-    border-radius: 14px;
-    border: 1px solid rgba(200, 200, 210, 0.8);
-    background: rgba(255, 255, 255, 0.7);
-    font-size: 15px;
-    outline: none;
-}
-
-#msg:focus {
-    border-color: #5AC8FA;
-    box-shadow: 0 0 0 3px rgba(90, 200, 250, 0.25);
-}
-
-/* ------------------------------
-   SEND BUTTON (Apple Blue)
------------------------------- */
-
-button {
-    margin-left: 10px;
-    padding: 12px 18px;
-    background: #007AFF;
-    color: white;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 500;
-    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
-}
-
-button:hover {
-    background: #0066d6;
-    box-shadow: 0 6px 18px rgba(0, 122, 255, 0.45);
-    transform: translateY(-1px);
-}
-
-/* ------------------------------
-   CHAT BUBBLES (Premium)
------------------------------- */
-
+/* --------------------------------------------------
+   MESSAGE BUBBLES
+-------------------------------------------------- */
 .chat-message {
-    max-width: 75%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    margin: 10px 0;
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    margin-bottom: 12px;
     font-size: 15px;
-    line-height: 1.45;
-    animation: bubbleIn 0.25s ease;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: 0 2px 6px var(--shadow);
 }
 
-@keyframes bubbleIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* USER MESSAGE (Apple Blue) */
-.user {
-    background: #007AFF;
+/* User bubble */
+.chat-message.user {
+    background: var(--accent);
     color: white;
     margin-left: auto;
-    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.25);
+    border-bottom-right-radius: 4px;
 }
 
-/* BOT MESSAGE (Soft Gray + Border) */
-.bot {
-    background: rgba(245, 245, 247, 0.9);
-    color: #111;
-    margin-right: auto;
-    border: 1px solid rgba(220, 220, 230, 0.8);
+/* Bot bubble */
+.chat-message.bot {
+    background: var(--bg-secondary);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
 }
 
-/* ------------------------------
-   TYPING DOTS (Futuristic)
------------------------------- */
-
+/* --------------------------------------------------
+   TYPING INDICATOR
+-------------------------------------------------- */
 .typing-dot {
-    width: 8px;
-    height: 8px;
-    background: #C7C7CC;
+    width: 6px;
+    height: 6px;
+    background: var(--text-light);
     border-radius: 50%;
     display: inline-block;
     margin-right: 4px;
     animation: blink 1.4s infinite both;
 }
 
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+.typing-dot:nth-child(2) {
+    animation-delay: .2s;
+}
+.typing-dot:nth-child(3) {
+    animation-delay: .4s;
+}
 
 @keyframes blink {
     0% { opacity: .2; }
@@ -223,14 +175,57 @@ button:hover {
     100% { opacity: .2; }
 }
 
-/* ------------------------------
-   MOBILE RESPONSIVE
------------------------------- */
+/* --------------------------------------------------
+   INPUT AREA
+-------------------------------------------------- */
+.input-area {
+    display: flex;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+}
 
+#msg {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border .2s ease;
+}
+
+#msg:focus {
+    border-color: var(--accent);
+}
+
+#send-btn {
+    margin-left: 10px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform .2s ease, opacity .2s ease;
+}
+
+#send-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* --------------------------------------------------
+   MOBILE RESPONSIVE
+-------------------------------------------------- */
 @media (max-width: 480px) {
     .chat-container {
-        width: 100%;
-        height: 100vh;
-        border-radius: 0;
+        width: 90%;
+        height: 70%;
+        right: 5%;
+        bottom: 90px;
     }
 }

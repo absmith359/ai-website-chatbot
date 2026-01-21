@@ -1,4 +1,11 @@
 // ------------------------------
+// LOAD HISTORY ON START
+// ------------------------------
+window.addEventListener("DOMContentLoaded", () => {
+    loadHistory();
+});
+
+// ------------------------------
 // SEND MESSAGE
 // ------------------------------
 async function sendMessage() {
@@ -6,6 +13,7 @@ async function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
+    playSend();
     addMessage(msg, "user");
     input.value = "";
 
@@ -29,7 +37,7 @@ async function sendMessage() {
 }
 
 // ------------------------------
-// ADD MESSAGE (instant for user)
+// ADD MESSAGE (instant)
 // ------------------------------
 function addMessage(text, sender) {
     const messages = document.getElementById("messages");
@@ -40,6 +48,8 @@ function addMessage(text, sender) {
 
     messages.appendChild(bubble);
     messages.scrollTop = messages.scrollHeight;
+
+    saveHistory();
 }
 
 // ------------------------------
@@ -59,6 +69,8 @@ function streamMessage(text, sender) {
             i++;
             messages.scrollTop = messages.scrollHeight;
             setTimeout(type, 15); // typing speed
+        } else {
+            saveHistory();
         }
     }
     type();
@@ -105,7 +117,58 @@ const chatWindow = document.getElementById("chat-window");
 
 if (chatToggle && chatWindow) {
     chatToggle.addEventListener("click", () => {
+        playTap();
         chatWindow.style.display =
             chatWindow.style.display === "flex" ? "none" : "flex";
     });
+}
+
+// ------------------------------
+// SOUND EFFECTS
+// ------------------------------
+const sendSound = new Audio("send.mp3");
+const tapSound = new Audio("tap.mp3");
+
+function playSend() {
+    sendSound.currentTime = 0;
+    sendSound.play().catch(() => {});
+}
+
+function playTap() {
+    tapSound.currentTime = 0;
+    tapSound.play().catch(() => {});
+}
+
+// Attach tap sound to send button
+const sendBtn = document.getElementById("send-btn");
+if (sendBtn) {
+    sendBtn.addEventListener("click", () => {
+        playTap();
+        sendMessage();
+    });
+}
+
+// ------------------------------
+// DARK MODE TOGGLE
+// ------------------------------
+const darkToggle = document.getElementById("dark-toggle");
+if (darkToggle) {
+    darkToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+    });
+}
+
+// ------------------------------
+// CHAT HISTORY (localStorage)
+// ------------------------------
+function saveHistory() {
+    const messages = document.getElementById("messages").innerHTML;
+    localStorage.setItem("chatHistory", messages);
+}
+
+function loadHistory() {
+    const saved = localStorage.getItem("chatHistory");
+    if (saved) {
+        document.getElementById("messages").innerHTML = saved;
+    }
 }

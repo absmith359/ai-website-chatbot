@@ -1,27 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>AI Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <div id="chat-widget">
-        <button id="chat-toggle">💬</button>
 
+        <!-- Floating Toggle Button -->
+        <button id="chat-toggle" aria-label="Open chat">💬</button>
+
+        <!-- Chat Window -->
         <div class="chat-container" id="chat-window">
 
+            <!-- Header -->
             <div class="chat-header">
                 <span>AI Assistant</span>
+                <button id="dark-toggle" aria-label="Toggle dark mode">🌙</button>
             </div>
 
+            <!-- Messages -->
             <div id="messages" class="messages"></div>
 
+            <!-- Input Area -->
             <div class="input-area">
-                <input id="msg" type="text" placeholder="Type a message...">
-                <button onclick="sendMessage()">Send</button>
+                <input 
+                    id="msg" 
+                    type="text" 
+                    placeholder="Type a message..." 
+                    autocomplete="off"
+                >
+                <button id="send-btn">Send</button>
             </div>
 
         </div>
