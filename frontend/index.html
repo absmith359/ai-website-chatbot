@@ -2,43 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Chatbot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+
+    <!-- Your existing stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div id="chat-widget">
+    <!-- Floating bubble opener (old UI style) -->
+    <div id="chat-bubble"></div>
 
-        <!-- Floating Toggle Button -->
-        <button id="chat-toggle" aria-label="Open chat">💬</button>
+    <!-- Chat container (old layout) -->
+    <div class="chat-container" id="chat-window">
 
-        <!-- Chat Window -->
-        <div class="chat-container" id="chat-window">
+        <!-- Header (old UI look, new IDs preserved where needed) -->
+        <div class="chat-header">
+            <div class="header-logo"></div>
+            <div class="header-title">AI Assistant</div>
 
-            <!-- Header -->
-            <div class="chat-header">
-                <span>AI Assistant</span>
+            <div class="header-spacer">
+                <!-- Visual-only theme button (old UI) -->
+                <button id="theme-toggle">☾</button>
+
+                <!-- Visual-only clear button -->
+                <button id="clear-chat-btn">Clear</button>
+
+                <!-- Your actual dark mode toggle (functional) -->
                 <button id="dark-toggle" aria-label="Toggle dark mode">🌙</button>
             </div>
-
-            <!-- Messages -->
-            <div id="messages" class="messages"></div>
-
-            <!-- Input Area -->
-            <div class="input-area">
-                <input 
-                    id="msg" 
-                    type="text" 
-                    placeholder="Type a message..." 
-                    autocomplete="off"
-                >
-                <button id="send-btn">Send</button>
-            </div>
-
         </div>
+
+        <!-- Messages window -->
+        <div class="chat-window-inner">
+            <div id="scroll-shadow"></div>
+            <div id="esc-hint">Press ESC to close</div>
+
+            <!-- Your actual messages container -->
+            <div id="messages" class="messages"></div>
+        </div>
+
+        <!-- Scroll down button (visual only) -->
+        <div id="scroll-down-btn">↓</div>
+
+        <!-- Input area (old layout, new IDs preserved) -->
+        <div class="input-area">
+            <input 
+                id="msg"
+                type="text"
+                placeholder="Type a message..."
+                autocomplete="off"
+            >
+            <button id="send-btn">Send</button>
+        </div>
+
     </div>
+
+    <!-- Your actual toggle button (kept functional) -->
+    <button id="chat-toggle" aria-label="Open chat">💬</button>
 
     <script src="script.js"></script>
 </body>

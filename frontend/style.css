@@ -1,231 +1,448 @@
-/* --------------------------------------------------
-   ROOT VARIABLES (Light + Dark Mode)
--------------------------------------------------- */
+/* ---------------------------
+   VisionOS Hybrid Enhancements
+   (Apply old design choices to current selectors)
+   --------------------------- */
+
+/* Shadows and helpers */
 :root {
-    --bg: #ffffff;
-    --bg-secondary: #f5f5f7;
-    --text: #1c1c1e;
-    --text-light: #6e6e73;
-    --accent: #007aff;
-    --border: #e5e5ea;
-    --shadow: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255,255,255,0.48);
+  --glass-border: rgba(255,255,255,0.35);
+  --glass-strong: rgba(255,255,255,0.85);
+  --glass-accent-1: rgba(216,232,255,1);
+  --glass-accent-2: rgba(207,228,255,1);
+  --glass-accent-3: rgba(255,180,220,0.22);
+  --shadow-1: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-2: 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-3: 0 20px 48px rgba(0,0,0,0.10);
 }
 
-body.dark {
-    --bg: #1c1c1e;
-    --bg-secondary: #2c2c2e;
-    --text: #f5f5f7;
-    --text-light: #a1a1a6;
-    --accent: #0a84ff;
-    --border: #3a3a3c;
-    --shadow: rgba(0, 0, 0, 0.4);
-}
-
-/* --------------------------------------------------
-   FLOATING WIDGET BUTTON
--------------------------------------------------- */
-#chat-toggle {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    background: var(--accent);
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
-    box-shadow: 0 8px 20px var(--shadow);
-    transition: transform .2s ease, box-shadow .2s ease;
-    z-index: 9999;
-}
-
-#chat-toggle:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 24px var(--shadow);
-}
-
-/* --------------------------------------------------
-   CHAT CONTAINER
--------------------------------------------------- */
+/* Container glass look */
 .chat-container {
-    position: fixed;
-    bottom: 100px;
-    right: 24px;
-    width: 360px;
-    height: 520px;
-    background: var(--bg);
-    border-radius: 18px;
-    box-shadow: 0 12px 32px var(--shadow);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    transition: opacity .25s ease, transform .25s ease;
-    transform: translateY(10px);
-    opacity: 0;
-    z-index: 9998;
+  background: linear-gradient(135deg, rgba(255,255,255,0.45), rgba(180,200,255,0.18));
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.28);
+  box-shadow: var(--shadow-3);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
-.chat-container.open {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* --------------------------------------------------
-   HEADER
--------------------------------------------------- */
+/* Header glass and logo sizing */
 .chat-header {
-    background: var(--bg-secondary);
-    padding: 14px 18px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.28), rgba(255,255,255,0.06));
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.22);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  padding: 14px 16px;
+  align-items: center;
 }
 
-#dark-toggle {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--text);
-    transition: opacity .2s ease;
+.header-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--shadow-1);
 }
 
-#dark-toggle:hover {
-    opacity: 0.7;
+/* Chat window inner glass */
+.chat-window-inner,
+.chat-window {
+  background: linear-gradient(135deg, rgba(255,255,255,0.45), rgba(180,200,255,0.28), rgba(255,180,220,0.22));
+  backdrop-filter: blur(20px);
+  padding: 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06) inset;
 }
 
-/* --------------------------------------------------
-   MESSAGES AREA
--------------------------------------------------- */
-.messages {
-    flex: 1;
-    padding: 16px;
-    overflow-y: auto;
-    background: var(--bg);
-    scroll-behavior: smooth;
+/* Scroll shadow stronger and dynamic */
+#scroll-shadow {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0,0,0,0));
+  filter: blur(6px);
+  opacity: 0.7;
+  transition: opacity .2s ease, transform .25s ease;
 }
 
-/* Hide scrollbar (cleaner look) */
-.messages::-webkit-scrollbar {
-    width: 6px;
-}
-.messages::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-}
-
-/* --------------------------------------------------
-   MESSAGE BUBBLES
--------------------------------------------------- */
-.chat-message {
-    max-width: 80%;
-    padding: 10px 14px;
-    border-radius: 14px;
-    margin-bottom: 12px;
-    font-size: 15px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    box-shadow: 0 2px 6px var(--shadow);
+/* ESC hint styling */
+#esc-hint {
+  color: rgba(0,0,0,0.55);
+  font-size: 12px;
+  right: 12px;
+  top: 8px;
+  position: absolute;
+  z-index: 6;
 }
 
-/* User bubble */
-.chat-message.user {
-    background: var(--accent);
-    color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 4px;
+/* Bubble opener glass */
+#chat-bubble {
+  background: linear-gradient(135deg, rgba(255,255,255,0.28), rgba(180,200,255,0.22));
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-size: 70%;
+  background-position: center;
 }
 
-/* Bot bubble */
-.chat-message.bot {
-    background: var(--bg-secondary);
-    color: var(--text);
-    border-bottom-left-radius: 4px;
+/* Scroll down button glass */
+#scroll-down-btn {
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  transition: opacity .25s ease, transform .18s ease;
 }
 
-/* --------------------------------------------------
-   TYPING INDICATOR
--------------------------------------------------- */
-.typing-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--text-light);
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 4px;
-    animation: blink 1.4s infinite both;
-}
-
-.typing-dot:nth-child(2) {
-    animation-delay: .2s;
-}
-.typing-dot:nth-child(3) {
-    animation-delay: .4s;
-}
-
-@keyframes blink {
-    0% { opacity: .2; }
-    20% { opacity: 1; }
-    100% { opacity: .2; }
-}
-
-/* --------------------------------------------------
-   INPUT AREA
--------------------------------------------------- */
+/* Input area glass and spacing */
 .input-area {
-    display: flex;
-    padding: 12px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border);
+  background: linear-gradient(to top, rgba(255,255,255,0.28), rgba(255,255,255,0.06));
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255,255,255,0.22);
+  padding: 12px;
+  gap: 10px;
 }
 
+/* Keep #msg ID but style like old textarea */
 #msg {
-    flex: 1;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    font-size: 15px;
-    outline: none;
-    transition: border .2s ease;
+  background: rgba(255,255,255,0.48);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+  transition: transform .18s cubic-bezier(.16,1,.3,1), box-shadow .18s ease;
+  font-size: 15px;
+  color: var(--text, #111);
+  outline: none;
+  min-height: 40px;
 }
 
 #msg:focus {
-    border-color: var(--accent);
+  transform: scale(1.01);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.85);
+  border-color: var(--glass-strong);
 }
 
+/* Send button glass */
 #send-btn {
-    margin-left: 10px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    border: none;
-    background: var(--accent);
-    color: white;
-    font-size: 15px;
-    cursor: pointer;
-    transition: transform .2s ease, opacity .2s ease;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 14px;
+  padding: 10px 16px;
+  box-shadow: var(--shadow-2);
+  font-weight: 600;
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 
-#send-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+#send-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.18);
 }
 
-/* --------------------------------------------------
-   MOBILE RESPONSIVE
--------------------------------------------------- */
+/* Message bubbles mapped to current classes */
+.message,
+.chat-message {
+  padding: 12px 16px;
+  border-radius: 14px;
+  max-width: 80%;
+  line-height: 1.45;
+  font-size: 15px;
+  background-clip: padding-box;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.35);
+  transform-origin: top center;
+  will-change: transform, opacity;
+  transition: opacity .25s ease, transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+}
+
+/* User bubble mapped to .message.user and .chat-message.user */
+.message.user,
+.chat-message.user {
+  margin-left: auto;
+  border-bottom-right-radius: 6px;
+  background: linear-gradient(135deg, var(--glass-accent-1), var(--glass-accent-2));
+  color: #06203a;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+  transform: translateZ(0);
+}
+
+/* Bot bubble mapped to .message.bot and .chat-message.bot */
+.message.bot,
+.chat-message.bot {
+  margin-right: auto;
+  border-bottom-left-radius: 6px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(180,200,255,0.28), rgba(255,180,220,0.22));
+  color: #111;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+/* Typing indicator glass */
+#typing-indicator {
+  min-height: 18px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 14px;
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-1);
+  animation: typingBreath 1.8s ease-in-out infinite;
+  transition: opacity .25s ease;
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+/* Typing dots */
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: #999;
+  border-radius: 50%;
+  animation: blink 1.4s infinite ease-in-out;
+}
+
+/* New message entrance */
+.new-message {
+  opacity: 0;
+  transform: translateY(6px) scale(0.985);
+  animation: fadeInUp .28s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* subtle breathing for typing */
+@keyframes typingBreath {
+  0% { transform: translateY(0); opacity: 0.95; }
+  50% { transform: translateY(-2px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.95; }
+}
+
+/* scroll shadow fade */
+.chat-window-inner.scrolled #scroll-shadow,
+.chat-window.scrolled #scroll-shadow {
+  opacity: 0.95;
+}
+
+/* responsive tweaks keep original breakpoints */
 @media (max-width: 480px) {
-    .chat-container {
-        width: 90%;
-        height: 70%;
-        right: 5%;
-        bottom: 90px;
-    }
+  .chat-container { width: 92vw; right: 4%; bottom: 80px; height: 72vh; }
+  #chat-bubble { right: 20px; bottom: 20px; width: 44px; height: 44px; }
+}
+
+/* keep dark mode compatibility by using existing variables where possible */
+body.dark .chat-container,
+body.dark .chat-window-inner {
+  background: linear-gradient(135deg, rgba(28,28,30,0.6), rgba(44,44,46,0.36));
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--text, #f5f5f7);
+}
+
+
+/* fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+
+
+/* micro-wiggle */
+@keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(1deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-1deg); }
+    100% { transform: rotate(0deg); }
+}
+
+
+
+
+/* animations */
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-6px); }
+    to { opacity: 1; transform: translateX(0); }
+
+}
+
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(6px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+
+
+
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+    50% { box-shadow: 0 0 10px rgba(0,0,0,0.12); }
+    100% { box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+}
+
+
+
+@keyframes typingBreath {
+    0% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.02); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.9; }
+}
+
+@keyframes blink {
+    0% { opacity: 0.2; }
+    50% { opacity: 1; }
+    100% { opacity: 0.2; }
+}
+
+
+@keyframes fadeInDark {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+
+
+
+
+
+
+/* =========================================================
+   DARK MODE — VisionOS Hybrid (Place at the VERY bottom)
+   ========================================================= */
+
+body.dark {
+  --text: #e5e5e7;
+  --text-light: #b5b5b7;
+  --glass-bg: rgba(40,40,45,0.55);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-strong: rgba(255,255,255,0.18);
+}
+
+/* Container */
+body.dark .chat-container {
+  background: linear-gradient(135deg, rgba(28,28,30,0.55), rgba(44,44,46,0.32));
+  border-color: rgba(255,255,255,0.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+/* Header */
+body.dark .chat-header {
+  background: rgba(255,255,255,0.04);
+  border-bottom-color: rgba(255,255,255,0.08);
+  color: var(--text);
+}
+
+/* Chat window */
+body.dark .chat-window-inner {
+  background: linear-gradient(135deg, rgba(28,28,30,0.55), rgba(44,44,46,0.32));
+  border-color: rgba(255,255,255,0.06);
+  box-shadow: inset 0 4px 18px rgba(0,0,0,0.25);
+}
+
+/* Scroll shadow */
+body.dark #scroll-shadow {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0));
+}
+
+/* Message bubbles */
+body.dark .message,
+body.dark .chat-message {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.10);
+  color: var(--text);
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+}
+
+/* User bubble */
+body.dark .message.user,
+body.dark .chat-message.user {
+  background: linear-gradient(135deg, #2a2a2d, #1f1f22);
+  color: #f0f0f0;
+  border-color: rgba(255,255,255,0.12);
+}
+
+/* Bot bubble */
+body.dark .message.bot,
+body.dark .chat-message.bot {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.18);
+  color: var(--text);
+  box-shadow: 0 0 22px rgba(120,160,255,0.12);
+}
+
+/* Input area */
+body.dark .input-area {
+  background: rgba(255,255,255,0.04);
+  border-top-color: rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* Input field (#msg) */
+body.dark #msg {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+  color: var(--text);
+  box-shadow: none;
+}
+
+body.dark #msg:focus {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.20);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+}
+
+/* Send button */
+body.dark #send-btn {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.12);
+  color: #e5e5e7;
+}
+
+/* Scroll-to-bottom button */
+body.dark #scroll-down-btn {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.10);
+  color: #dcdcdc;
+}
+
+/* Typing indicator */
+body.dark #typing-indicator {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+  color: var(--text);
+}
+
+/* Header icons */
+body.dark #theme-toggle,
+body.dark #clear-chat-btn {
+  color: #d8d8d8;
+  opacity: 0.9;
+}
+
+/* Title */
+body.dark .header-title {
+  color: #f5f5f7;
+  opacity: 0.9;
+}
+
+/* ESC hint */
+body.dark #esc-hint {
+  color: rgba(255,255,255,0.55);
+  opacity: 0.45;
 }

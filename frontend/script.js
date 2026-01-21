@@ -1,174 +1,204 @@
-// ------------------------------
-// LOAD HISTORY ON START
-// ------------------------------
-window.addEventListener("DOMContentLoaded", () => {
-    loadHistory();
-});
+let isSending = false;
 
-// ------------------------------
-// SEND MESSAGE
-// ------------------------------
-async function sendMessage() {
+window.onload = () => {
+
+    // DOM elements (mapped to your new HTML)
     const input = document.getElementById("msg");
-    const msg = input.value.trim();
-    if (!msg) return;
+    const sendBtn = document.getElementById("send-btn");
+    const chatWindow = document.getElementById("messages");
+    const bubble = document.getElementById("chat-bubble");
+    const container = document.querySelector(".chat-container");
+    const scrollShadow = document.getElementById("scroll-shadow");
+    const scrollDownBtn = document.getElementById("scroll-down-btn");
 
-    playSend();
-    addMessage(msg, "user");
-    input.value = "";
+    // Disable input until bubble is clicked
+    input.disabled = true;
+    sendBtn.disabled = true;
 
-    showTyping();
+    // -------------------------------
+    // OPEN CHAT (bubble behavior)
+    // -------------------------------
+    bubble.onclick = () => {
+        container.classList.add("open");
+        bubble.classList.add("hidden");
 
-    try {
-        const res = await fetch("https://ai-website-chatbot.onrender.com/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
-        });
+        // Add ESC hint if missing
+        if (!document.getElementById("esc-hint")) {
+            const hint = document.createElement("div");
+            hint.id = "esc-hint";
+            hint.textContent = "Press ESC to close";
+            container.appendChild(hint);
+        }
 
-        const data = await res.json();
-        hideTyping();
-        streamMessage(data.reply, "bot");
+        // Enable input
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+    };
 
-    } catch (err) {
-        hideTyping();
-        addMessage("Error: Could not reach server.", "bot");
+    // -------------------------------
+    // SEND MESSAGE
+    // -------------------------------
+    sendBtn.onclick = sendMessage;
+
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    async function sendMessage() {
+        if (isSending) return;
+        isSending = true;
+
+        const msg = input.value.trim();
+        if (!msg) {
+            isSending = false;
+            return;
+        }
+
+        playSend();
+        addMessage(msg, "user");
+        input.value = "";
+
+        showTyping();
+
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 20000);
+
+            const res = await fetch("https://ai-website-chatbot.onrender.com/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: msg }),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeout);
+
+            hideTyping();
+
+            if (!res.ok) {
+                addMessage("Server error (" + res.status + "). Try again.", "bot");
+                isSending = false;
+                return;
+            }
+
+            const data = await res.json();
+
+            if (!data || !data.reply) {
+                addMessage("No reply received from server.", "bot");
+            } else {
+                streamMessage(data.reply, "bot");
+            }
+
+        } catch (err) {
+            hideTyping();
+
+            if (err.name === "AbortError") {
+                addMessage("Request timed out. Try again.", "bot");
+            } else {
+                addMessage("Error: Could not reach server.", "bot");
+            }
+        }
+
+        isSending = false;
     }
-}
 
-// ------------------------------
-// ADD MESSAGE (instant)
-// ------------------------------
-function addMessage(text, sender) {
-    const messages = document.getElementById("messages");
+    // -------------------------------
+    // ADD MESSAGE (old UI style)
+    // -------------------------------
+    function addMessage(text, sender) {
+        const msg = document.createElement("div");
+        msg.className = "message " + sender;
 
-    const bubble = document.createElement("div");
-    bubble.classList.add("chat-message", sender);
-    bubble.innerText = text;
+        const nearBottom =
+            chatWindow.scrollHeight - chatWindow.scrollTop - chatWindow.clientHeight < 80;
 
-    messages.appendChild(bubble);
-    messages.scrollTop = messages.scrollHeight;
+        msg.innerText = text;
+        chatWindow.appendChild(msg);
 
-    saveHistory();
-}
-
-// ------------------------------
-// STREAM MESSAGE (bot typing effect)
-// ------------------------------
-function streamMessage(text, sender) {
-    const messages = document.getElementById("messages");
-
-    const bubble = document.createElement("div");
-    bubble.classList.add("chat-message", sender);
-    messages.appendChild(bubble);
-
-    let i = 0;
-    function type() {
-        if (i < text.length) {
-            bubble.innerHTML += text.charAt(i);
-            i++;
-            messages.scrollTop = messages.scrollHeight;
-            setTimeout(type, 15); // typing speed
-        } else {
-            saveHistory();
+        if (nearBottom) {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     }
-    type();
-}
 
-// ------------------------------
-// TYPING INDICATOR
-// ------------------------------
-function showTyping() {
-    const messages = document.getElementById("messages");
+    // -------------------------------
+    // TYPING INDICATOR (old style)
+    // -------------------------------
+    let typingInterval = null;
 
-    const typing = document.createElement("div");
-    typing.id = "typing";
-    typing.classList.add("chat-message", "bot");
-    typing.innerHTML = `
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-    `;
+    function showTyping() {
+        if (document.getElementById("typing-indicator")) return;
 
-    messages.appendChild(typing);
-    messages.scrollTop = messages.scrollHeight;
-}
+        const indicator = document.createElement("div");
+        indicator.id = "typing-indicator";
+        indicator.className = "message bot";
+        indicator.style.display = "flex";
+        indicator.style.alignItems = "center";
+        indicator.style.gap = "6px";
 
-function hideTyping() {
-    const t = document.getElementById("typing");
-    if (t) t.remove();
-}
+        const label = document.createElement("span");
+        label.innerText = "typing";
 
-// ------------------------------
-// ENTER TO SEND
-// ------------------------------
-document.getElementById("msg").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        sendMessage();
+        const dotsContainer = document.createElement("span");
+        dotsContainer.style.display = "flex";
+        dotsContainer.style.gap = "4px";
+
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement("span");
+            dot.className = "typing-dot";
+            dot.style.opacity = "0";
+            dotsContainer.appendChild(dot);
+        }
+
+        indicator.appendChild(label);
+        indicator.appendChild(dotsContainer);
+        chatWindow.appendChild(indicator);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        const dots = dotsContainer.children;
+        let t = 0;
+
+        typingInterval = setInterval(() => {
+            for (let i = 0; i < dots.length; i++) {
+                const phase = (t - i * 0.5);
+                const raw = Math.sin(phase);
+                const opacity = raw > 0 ? raw * 0.9 : 0;
+                dots[i].style.opacity = opacity.toFixed(2);
+            }
+            t += 0.25;
+        }, 100);
     }
-});
 
-// ------------------------------
-// FLOATING WIDGET TOGGLE
-// ------------------------------
-const chatToggle = document.getElementById("chat-toggle");
-const chatWindow = document.getElementById("chat-window");
-
-if (chatToggle && chatWindow) {
-    chatToggle.addEventListener("click", () => {
-        playTap();
-        chatWindow.style.display =
-            chatWindow.style.display === "flex" ? "none" : "flex";
-    });
-}
-
-// ------------------------------
-// SOUND EFFECTS
-// ------------------------------
-const sendSound = new Audio("send.mp3");
-const tapSound = new Audio("tap.mp3");
-
-function playSend() {
-    sendSound.currentTime = 0;
-    sendSound.play().catch(() => {});
-}
-
-function playTap() {
-    tapSound.currentTime = 0;
-    tapSound.play().catch(() => {});
-}
-
-// Attach tap sound to send button
-const sendBtn = document.getElementById("send-btn");
-if (sendBtn) {
-    sendBtn.addEventListener("click", () => {
-        playTap();
-        sendMessage();
-    });
-}
-
-// ------------------------------
-// DARK MODE TOGGLE
-// ------------------------------
-const darkToggle = document.getElementById("dark-toggle");
-if (darkToggle) {
-    darkToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-    });
-}
-
-// ------------------------------
-// CHAT HISTORY (localStorage)
-// ------------------------------
-function saveHistory() {
-    const messages = document.getElementById("messages").innerHTML;
-    localStorage.setItem("chatHistory", messages);
-}
-
-function loadHistory() {
-    const saved = localStorage.getItem("chatHistory");
-    if (saved) {
-        document.getElementById("messages").innerHTML = saved;
+    function hideTyping() {
+        if (typingInterval) {
+            clearInterval(typingInterval);
+            typingInterval = null;
+        }
+        const indicator = document.getElementById("typing-indicator");
+        if (indicator) indicator.remove();
     }
-}
+
+    // -------------------------------
+    // SCROLL DOWN BUTTON
+    // -------------------------------
+    scrollDownBtn.onclick = () => {
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    };
+
+    chatWindow.addEventListener("scroll", () => {
+        const atBottom =
+            chatWindow.scrollHeight - chatWindow.scrollTop - chatWindow.clientHeight < 40;
+
+        scrollDownBtn.style.opacity = atBottom ? "0" : "1";
+    });
+
+    // -------------------------------
+    // CLEAR CHAT (visual only)
+    // -------------------------------
+    document.getElementById("clear-chat-btn").onclick = () => {
+        chatWindow.innerHTML = "";
+    };
+};
